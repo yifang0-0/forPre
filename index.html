@@ -37,10 +37,10 @@ p { margin: 0; color: var(--muted); font-size: .9rem; max-width: 65ch; }
 </div>
 <script>
 const D = [["AMASS", "simulated", 7.02, 1.70], ["Kiel", "real", 11.08, 9.19], ["TotalCapture", "real", 19.22, 14.97]];
-const W = 640, H = 300, L = 40, R = 10, T = 24, B = 50, top = 20;
-const y = v => T + (H - T - B) * (1 - v / top), gw = (W - L - R) / D.length, bw = 64;
+const W = 640, H = 300, L = 40, R = 10, T = 24, B = 50, ymax = 20;
+const y = v => T + (H - T - B) * (1 - v / ymax), gw = (W - L - R) / D.length, bw = 64;
 let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Mean error, EKF vs hybrid: AMASS 7.0 vs 1.7, Kiel 11.1 vs 9.2, TotalCapture 19.2 vs 15.0 degrees">`;
-for (let v = 0; v <= top; v += 5) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v}°</text>`;
+for (let v = 0; v <= ymax; v += 5) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v}°</text>`;
 D.forEach(([name, kind, e, h], i) => {
   const cx = L + gw * (i + .5);
   [[e, "--ekf", -1], [h, "--ours", 1]].forEach(([v, c, side]) => {

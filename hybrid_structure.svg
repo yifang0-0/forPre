@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 300" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" role="img" aria-label="Structure of the hybrid: each step the EKF predicts with the gyroscopes, takes the Transformer's relative orientation as an update every 0.1 s, then applies the joint-constraint update">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1b2330"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0b5d8f"/></marker>
+  </defs>
+  <rect width="820" height="300" fill="#ffffff"/>
+  <!-- inputs -->
+  <rect x="15" y="60" width="115" height="64" rx="8" fill="#eef1f5" stroke="#8a94a6"/>
+  <text x="72" y="88" text-anchor="middle" font-size="15" font-weight="600" fill="#1b2330">Two IMUs</text>
+  <text x="72" y="108" text-anchor="middle" font-size="12" fill="#5a6577">acc + gyro</text>
+  <!-- EKF -->
+  <rect x="165" y="20" width="490" height="140" rx="10" fill="#f3f5f8" stroke="#8a94a6"/>
+  <text x="180" y="42" font-size="13" font-weight="600" fill="#5a6577">EKF, every sample (100 Hz)</text>
+  <rect x="180" y="66" width="135" height="52" rx="6" fill="#ffffff" stroke="#8a94a6"/>
+  <text x="247" y="97" text-anchor="middle" font-size="13" fill="#1b2330">Gyro prediction</text>
+  <rect x="345" y="66" width="135" height="52" rx="6" fill="#0b5d8f"/>
+  <text x="412" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Network update</text>
+  <text x="412" y="106" text-anchor="middle" font-size="11" fill="#dbe9f4">σ = 10°, every 0.1 s</text>
+  <rect x="510" y="66" width="135" height="52" rx="6" fill="#ffffff" stroke="#8a94a6"/>
+  <text x="577" y="88" text-anchor="middle" font-size="13" fill="#1b2330">Joint-constraint</text>
+  <text x="577" y="106" text-anchor="middle" font-size="13" fill="#1b2330">update</text>
+  <!-- output -->
+  <rect x="690" y="66" width="120" height="52" rx="8" fill="#eef1f5" stroke="#8a94a6"/>
+  <text x="750" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="#1b2330">Relative</text>
+  <text x="750" y="106" text-anchor="middle" font-size="13" font-weight="600" fill="#1b2330">orientation</text>
+  <!-- Transformer and calibration -->
+  <rect x="180" y="195" width="190" height="56" rx="8" fill="#e6f0f7" stroke="#0b5d8f"/>
+  <text x="275" y="218" text-anchor="middle" font-size="14" font-weight="600" fill="#1b2330">Transformer (frozen)</text>
+  <text x="275" y="238" text-anchor="middle" font-size="12" fill="#5a6577">relative orientation y</text>
+  <rect x="405" y="195" width="170" height="56" rx="8" fill="#ffffff" stroke="#8a94a6" stroke-dasharray="5 4"/>
+  <text x="490" y="218" text-anchor="middle" font-size="13" fill="#1b2330">Session calibration</text>
+  <text x="490" y="238" text-anchor="middle" font-size="12" fill="#5a6577">real sensors only</text>
+  <!-- arrows -->
+  <path d="M130,92 H178" fill="none" stroke="#1b2330" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M150,92 V223 H178" fill="none" stroke="#1b2330" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M315,92 H343" fill="none" stroke="#1b2330" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M480,92 H508" fill="none" stroke="#1b2330" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M645,92 H688" fill="none" stroke="#1b2330" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M370,213 H390 V140 H400 V120" fill="none" stroke="#0b5d8f" stroke-width="1.8" marker-end="url(#b)"/>
+  <path d="M440,195 V120" fill="none" stroke="#8a94a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="410" y="285" text-anchor="middle" font-size="12" fill="#5a6577">The Kalman gain trusts the network only where the joint constraint leaves the filter uncertain.</text>
+</svg>

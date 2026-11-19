@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hybrid EKF Results</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one headline, one chart, one note. */
+:root { --bg: #f7f8fa; --panel: #ffffff; --fg: #1b2330; --muted: #5a6577; --rule: #dde2ea; --ekf: #8a94a6; --ours: #0b5d8f;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #12161d; --panel: #1a202a; --fg: #e6eaf0; --muted: #9aa5b6; --rule: #2c3442; --ekf: #7d889b; --ours: #6cb8e2; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #12161d; --panel: #1a202a; --fg: #e6eaf0; --muted: #9aa5b6; --rule: #2c3442; --ekf: #7d889b; --ours: #6cb8e2; color-scheme: dark }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 720px; margin: 0 auto; padding-block: 32px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0; font-weight: 600; text-wrap: balance; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; }
+.legend { display: flex; gap: 18px; font-size: .9rem; color: var(--muted); margin-bottom: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { fill: var(--muted); font-family: var(--sans); font-size: 13px; }
+svg .val { fill: var(--fg); font-family: var(--mono); font-size: 13px; }
+svg .ds { fill: var(--fg); font-size: 14px; font-weight: 600; }
+p { margin: 0; color: var(--muted); font-size: .9rem; max-width: 65ch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Adding a learned estimate to the EKF lowers the error on simulated and real data</h1>
+  <div class="panel">
+    <div class="legend"><span><i class="sw" style="background:var(--ekf)"></i>EKF</span><span><i class="sw" style="background:var(--ours)"></i>Hybrid (ours)</span></div>
+    <div id="chart"></div>
+  </div>
+  <p>Mean relative-orientation error per record, lower is better. Same records for both methods in each dataset.</p>
+  <div class="panel"><img src="hybrid_structure.svg" alt="Structure of the hybrid: gyro prediction, network update every 0.1 s with the Transformer's relative orientation, then the joint-constraint update" style="width:100%;height:auto;display:block;border-radius:6px"></div>
+</div>
+<script>
+const D = [["AMASS", "simulated", 7.02, 1.70], ["Kiel", "real", 11.08, 9.19], ["TotalCapture", "real", 19.22, 14.97]];
+const W = 640, H = 300, L = 40, R = 10, T = 24, B = 50, top = 20;
+const y = v => T + (H - T - B) * (1 - v / top), gw = (W - L - R) / D.length, bw = 64;
+let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Mean error, EKF vs hybrid: AMASS 7.0 vs 1.7, Kiel 11.1 vs 9.2, TotalCapture 19.2 vs 15.0 degrees">`;
+for (let v = 0; v <= top; v += 5) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v}°</text>`;
+D.forEach(([name, kind, e, h], i) => {
+  const cx = L + gw * (i + .5);
+  [[e, "--ekf", -1], [h, "--ours", 1]].forEach(([v, c, side]) => {
+    const x = cx + (side < 0 ? -bw - 3 : 3), yy = y(v);
+    s += `<path d="M${x},${y(0)} V${yy + 4} q0,-4 4,-4 h${bw - 8} q4,0 4,4 V${y(0)} Z" fill="var(${c})"/>`;
+    s += `<text class="val" x="${x + bw / 2}" y="${yy - 7}" text-anchor="middle">${v.toFixed(1)}°</text>`;
+  });
+  s += `<text class="ds" x="${cx}" y="${H - B + 22}" text-anchor="middle">${name}</text><text x="${cx}" y="${H - B + 40}" text-anchor="middle">${kind}</text>`;
+});
+document.getElementById("chart").innerHTML = s + "</svg>";
+</script>
+
+</body>
+</html>
